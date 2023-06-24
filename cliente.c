@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "message.h"
+#include "command.h"
 
 #define ETHERNET "lo"
 #define TIMEOUT 0xFF
 
 int main(int argc, char *argv[]) {
-    int clientSocket, i;
-    char path[1024];
+int clientSocket, i, select;
+char *path, comando[100], arg[100], *token = NULL;
     // char* comando, argumento;
     // char *token = NULL;
     FILE* arq = fopen("input.txt", "r");
@@ -27,16 +28,20 @@ int main(int argc, char *argv[]) {
     // printf("Mensagem: %s\n", mensagem);
     clientSocket = ConexaoRawSocket(ETHERNET);
     mensagem_t msg;
-    // while (1) {
-		/* memset(comando, '\0', (size_t)sizeof(comando));
-		memset(arg, '\0', (size_t)sizeof(arg)); */
-    // getcwd(path, sizeof(path)); //armazena o caminho do diretório atual
     while(1) {
-      // fgets(comando, sizeof(comando), stdin);
-      // token = strtok(comando, " ");
-      // printf("%s\n", token);  
-      // se o arquivo possui mais de 63 bytes, divide em pacotes
-      if(strlen(arquivo) > TAM_BUFFER_DADOS) {
+        fgets(comando, sizeof(comando), stdin);
+        // token = strtok(comando, " ");
+        // printf("%s\n", token);  //armazena o comando na variavel token 
+        // path = strtok(NULL, "\n");
+        // printf("%s\n", path);  //armazena o caminho na variavel path
+        select = leComando(comando);
+        if (select == -1)
+            break;
+        }
+
+
+        // se o arquivo possui mais de 63 bytes, divide em pacotes
+        if(strlen(arquivo) > TAM_BUFFER_DADOS) {
         int pacotes = strlen(arquivo) / TAM_BUFFER_DADOS;
         int resto = strlen(arquivo) % TAM_BUFFER_DADOS;
 
@@ -53,24 +58,21 @@ int main(int argc, char *argv[]) {
                 }
             }
 
-            CriaMensagem(&msg, 0x00, parte);
+            CriaMensagem(&msg, 0000, parte);
             send(clientSocket, &msg, sizeof(msg), 0);
             printf("Mensagem enviada: %s\n", msg.dados);
 
         }
-        break;
     }
-      // send(clientSocket, mensagem, strlen(mensagem), 0);
-      // if(!strcmp(comando, "exit")) {
-      //   printf("saindo\n");
-      //   break;
-      // }
-      // if(!strcmp(comando, "cd")) // Comando cd remoto
-      //   if(!strcmp(argumento, ""))
-      //     printf("Digite um caminho como argumento.\n");
-      //   else{
-      //     EnviaChangeDirectory(socket, argumento);
-      //   }
-    }
+        // send(clientSocket, mensagem, strlen(mensagem), 0);
+        // if(!strcmp(comando, "exit")) {
+        //   printf("saindo\n");
+        //   break;
+        // }
+        // if(!strcmp(comando, "cd")) // Comando cd remoto
+        //   if(!strcmp(argumento, ""))
+        //     printf("Digite um caminho como argumento.\n");
+        //   else{
+        //     EnviaChangeDirectory(socket, argumento);
     close(clientSocket);
-}
+    }

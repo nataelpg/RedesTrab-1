@@ -1,5 +1,5 @@
 FLAGS = -Wall -std=c99
-OBJS = message.o 
+OBJS = message.o command.o
 PROG = cliente
 
 .PHONY: all debug clean purge
@@ -18,6 +18,12 @@ client: client.o $(OBJS)
 server: server.o $(OBJS)
 	gcc -o server server.o $(OBJS) $(FLAGS)
 
+command: command.o $(OBJS)
+	gcc -o command command.o $(OBJS) $(FLAGS)
+
+command.o: command.c
+	gcc -c command.c $(FLAGS)
+
 message.o: message.c
 	gcc -c message.c $(FLAGS)
 
@@ -27,12 +33,8 @@ client.o: client.c
 server.o: server.c
 	gcc -c server.c $(FLAGS)
 
-your_program_name.o: your_program_name.c  # Add rule for main program file
-	gcc -c your_program_name.c $(FLAGS)
-
 clean:
 	@rm -f ~.bak .tmp
 
 purge: clean
-	@rm -f $(PROG) $(PROG_AUX).o $(OBJS) core a.out
-	@rm -f .png marker.out.log
+	@rm -f $(PROG) $(PROG_AUX).o

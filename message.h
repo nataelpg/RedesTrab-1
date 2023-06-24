@@ -1,5 +1,21 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
+#define BACKUP 0000 // backup 1 arquivo
+#define BACKUP_DIR 0001// backup +1 arquivo
+#define GET 0010 // recupera 1 arquivo 
+#define GET_DIR 0011 // recupera +1 arquivo
+#define ESCOLHE 0100 // escolher dir servidor
+#define VERIFICA_BACKUP // verifica backup
+#define RECUPERA 0110
+#define MD5 0111
+#define DADOS 1000
+#define FIM_ARQ 1001
+#define FIM_DIR 1010
+#define INDEFINIDO 1011
+#define ERRO 1100  
+#define OK 1101
+#define ACK 1110
+#define NACK 1111
 
 #include <sys/types.h>
 #include <sys/socket.h>

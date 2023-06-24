@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
 
     while (1) {
         mensagem_t receivedMsg;
+        char* comando;
         struct sockaddr_ll addr;
         socklen_t addr_len = sizeof(addr);
 
@@ -28,14 +29,14 @@ int main(int argc, char *argv[]) {
             // printf("  tam: %u\n", receivedMsg.tam);
             // printf("  sequencia: %u\n", receivedMsg.sequencia);
             // printf("  tipo: %u\n", receivedMsg.tipo);
-            switch (receivedMsg.tipo){
-            case 0x00:
+            switch (comando){
+            case 'CD':
                 printf("  tipo: %u\n", receivedMsg.tipo);
                 break;
-            case 0x01:
+            case 'LS':
                 printf("  tipo: %u\n", receivedMsg.tipo);
                 break;
-            case 0x02:
+            case 'exit':
                 printf("  tipo: %u\n", receivedMsg.tipo);
                 break;
             }
