@@ -1,4 +1,19 @@
 #ifndef MESSAGE_H
+//bibliotecas raw socket
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/ethernet.h>
+#include <linux/if_packet.h>
+#include <linux/if.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/socket.h>  
+#include <netinet/in.h>   
+#include <unistd.h>   
+
+//código dos tipos
 #define MESSAGE_H
 #define BACKUP 0000 // backup 1 arquivo
 #define BACKUP_DIR 0001// backup +1 arquivo
@@ -17,21 +32,9 @@
 #define ACK 1110
 #define NACK 1111
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/ethernet.h>
-#include <linux/if_packet.h>
-#include <linux/if.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <sys/socket.h>  
-#include <netinet/in.h>   
-#include <unistd.h>     
 
-#define BIT_INICIO 0x7E // 01111110 sequencia para começar a ler a mensagem
-#define TAM_BUFFER_DADOS   63 //tamanho do buffer de dados 
+#define BIT_INICIO 01111110 // 01111110 sequencia para começar a ler a mensagem
+#define TAM_BUFFER_DADOS 63 //tamanho do buffer de dados 
 
 struct mensagem {
 	unsigned char ini:8;

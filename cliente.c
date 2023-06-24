@@ -8,8 +8,8 @@
 #define TIMEOUT 0xFF
 
 int main(int argc, char *argv[]) {
-int clientSocket, i, select;
-char *path, comando[100], arg[100], *token = NULL;
+    int clientSocket, i, select;
+    char *path, comando[100], arg[100], *token = NULL;
     // char* comando, argumento;
     // char *token = NULL;
     FILE* arq = fopen("input.txt", "r");
@@ -34,45 +34,28 @@ char *path, comando[100], arg[100], *token = NULL;
         // printf("%s\n", token);  //armazena o comando na variavel token 
         // path = strtok(NULL, "\n");
         // printf("%s\n", path);  //armazena o caminho na variavel path
-        select = leComando(comando);
-        if (select == -1)
+        char *token = NULL;
+        char *argumento = NULL;
+        token = strtok(comando, " ");
+        token[strcspn(token, "\n")] = '\0';
+        argumento = strtok(NULL, " ");
+        if (argumento)
+            argumento[strcspn(argumento, "\n")] = '\0';
+
+        if (!strcmp(token, "cd")) {
+            // enviaCD(comando);
+        } else if (!strcmp(token, "ls")) {
+            lsDir(argumento);
+        } else if (!strcmp(token, "Backup") || !strcmp(token, "BACKUP") || !strcmp(token, "backup")) {
+            backupArquivo(argumento, clientSocket, msg);
+            /* putArchive(select = 1); */
+        } else if (!strcmp(token, "get")){
+
+            /* getArchive(); */
+        } else if(!strcmp(token, "exit")){
+            
             break;
         }
-
-
-        // se o arquivo possui mais de 63 bytes, divide em pacotes
-        if(strlen(arquivo) > TAM_BUFFER_DADOS) {
-        int pacotes = strlen(arquivo) / TAM_BUFFER_DADOS;
-        int resto = strlen(arquivo) % TAM_BUFFER_DADOS;
-
-        for(i = 0; i < pacotes + 1; i++) {
-            char parte[TAM_BUFFER_DADOS + 1];
-            strncpy(parte, arquivo + (i * TAM_BUFFER_DADOS), TAM_BUFFER_DADOS);
-            parte[TAM_BUFFER_DADOS] = '\0';  // Adiciona o caractere nulo ao final da parte
-
-            // se o tamanho da parte for menor que o tamanho do buffer, preenche com 0 o restante
-            if(strlen(parte) < TAM_BUFFER_DADOS) {
-                int j;
-                for(j = strlen(parte); j < TAM_BUFFER_DADOS; j++) {
-                    parte[j] = '0';
-                }
-            }
-
-            CriaMensagem(&msg, 0000, parte);
-            send(clientSocket, &msg, sizeof(msg), 0);
-            printf("Mensagem enviada: %s\n", msg.dados);
-
-        }
-    }
-        // send(clientSocket, mensagem, strlen(mensagem), 0);
-        // if(!strcmp(comando, "exit")) {
-        //   printf("saindo\n");
-        //   break;
-        // }
-        // if(!strcmp(comando, "cd")) // Comando cd remoto
-        //   if(!strcmp(argumento, ""))
-        //     printf("Digite um caminho como argumento.\n");
-        //   else{
-        //     EnviaChangeDirectory(socket, argumento);
     close(clientSocket);
     }
+}
