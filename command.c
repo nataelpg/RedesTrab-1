@@ -47,12 +47,12 @@ int backupArquivo(char* argumento, int clientSocket, mensagem_t msg){
 				parte[TAM_BUFFER_DADOS] = '\0';  // Adiciona o caractere nulo ao final da parte
 
 				// se o tamanho da parte for menor que o tamanho do buffer, preenche com 0 o restante
-				if(strlen(parte) < TAM_BUFFER_DADOS) {
-					int j;
-					for(j = strlen(parte); j < TAM_BUFFER_DADOS; j++) {
-						parte[j] = '0';
-					}
-				}
+				// if(strlen(parte) < TAM_BUFFER_DADOS) {
+				// 	int j;
+				// 	for(j = strlen(parte); j < TAM_BUFFER_DADOS; j++) {
+				// 		parte[j] = '0';
+				// 	}
+				// }
 
 				CriaMensagem(&msg, 0000, parte, i + 1);
 				send(clientSocket, &msg, sizeof(msg), 0);
