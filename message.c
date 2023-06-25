@@ -1,4 +1,5 @@
 #include "message.h"
+#include <string.h>
 
 int ConexaoRawSocket(char *device)
 {
@@ -14,7 +15,8 @@ int ConexaoRawSocket(char *device)
   }
 
   memset(&ir, 0, sizeof(struct ifreq));  	/*dispositivo eth0*/
-  memcpy(ir.ifr_name, device, sizeof(device));
+  // memcpy(ir.ifr_name, device, sizeof(device));
+  memcpy(ir.ifr_name, device, strlen(device) + 1);
   if (ioctl(soquete, SIOCGIFINDEX, &ir) == -1) {
     printf("Erro no ioctl\n");
     exit(-1);
@@ -43,8 +45,8 @@ int ConexaoRawSocket(char *device)
 }
 
 void CriaMensagem(struct mensagem *msg, char msgTipo, char *msgDados){
-	msg->ini = BIT_INICIO;
-	msg->tam = strlen(msg->dados); // guarda o tamanho da mensagem em bytes
+	msg->ini = (unsigned char)BIT_INICIO;
+	msg->tam = strlen(msgDados); // guarda o tamanho da mensagem em bytes
 	msg->sequencia = 0x00; 
 	msg->tipo = msgTipo;
 

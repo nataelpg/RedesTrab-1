@@ -27,16 +27,23 @@ int backupArquivo(char* argumento, int clientSocket, mensagem_t msg){
 			return 1;
 		}
 		
+		char nomeArquivo[TAM_BUFFER_DADOS + 1];
+		strncpy(nomeArquivo, argumento, TAM_BUFFER_DADOS);
+		nomeArquivo[TAM_BUFFER_DADOS] = '\0'; 
+		CriaMensagem(&msg, 0000, nomeArquivo);
+		send(clientSocket, &msg, sizeof(msg), 0);
+		// printf("Nome arquivo enviado: %s\n", msg.dados);
+
 		int pacotes = 0;
 		printf ("Mensagem: %s\n", arquivo);
 		
-		if(strlen(arquivo) > TAM_BUFFER_DADOS) {
-        int pacotes = strlen(arquivo) / TAM_BUFFER_DADOS;
-        int resto = strlen(arquivo) % TAM_BUFFER_DADOS;
+		if(strlen((char*)arquivo) > TAM_BUFFER_DADOS) {
+        int pacotes = strlen((char*)arquivo) / TAM_BUFFER_DADOS;
+        int resto = strlen((char*)arquivo) % TAM_BUFFER_DADOS;
 
 			for(int i = 0; i < pacotes + 1; i++) {
 				char parte[TAM_BUFFER_DADOS + 1];
-				strncpy(parte, arquivo + (i * TAM_BUFFER_DADOS), TAM_BUFFER_DADOS);
+				strncpy(parte, (char*)(arquivo + (i * TAM_BUFFER_DADOS)), TAM_BUFFER_DADOS);
 				parte[TAM_BUFFER_DADOS] = '\0';  // Adiciona o caractere nulo ao final da parte
 
 				// se o tamanho da parte for menor que o tamanho do buffer, preenche com 0 o restante
