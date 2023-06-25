@@ -1,6 +1,7 @@
 #include "message.h"
 #include <sys/stat.h>
 #include <time.h>
+#include <string.h>
 #define ETHERNET "lo"
 
 int main(int argc, char *argv[])
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
 
         ssize_t bytesReceived = recvfrom(serverSocket, &receivedMsg, sizeof(mensagem_t), 0, (struct sockaddr *)&addr, &addr_len);
         // ve marcador de inicio
-        if (bytesReceived == sizeof(mensagem_t)) {
+        if ((bytesReceived == sizeof(mensagem_t)) && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
             // Mensagem recebida
             if (file == NULL)
             {
