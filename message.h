@@ -47,7 +47,7 @@ struct mensagem {
 typedef struct mensagem mensagem_t;
 
 int ConexaoRawSocket(char*); //Cria socket
-void CriaMensagem(struct mensagem *, char, char*); //Cria a mensagem que será mandada por parametro
+void CriaMensagem(struct mensagem *, char, char*, int); //Cria a mensagem que será mandada por parametro
 unsigned char *readArchive(FILE *file);
 
 #endif

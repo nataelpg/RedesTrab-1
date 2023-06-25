@@ -32,7 +32,6 @@ int ConexaoRawSocket(char *device)
     exit(-1);
   }
 
-
   memset(&mr, 0, sizeof(mr));          /*Modo Promiscuo*/
   mr.mr_ifindex = ir.ifr_ifindex;
   mr.mr_type = PACKET_MR_PROMISC;
@@ -44,10 +43,10 @@ int ConexaoRawSocket(char *device)
   return soquete;
 }
 
-void CriaMensagem(struct mensagem *msg, char msgTipo, char *msgDados){
+void CriaMensagem(struct mensagem *msg, char msgTipo, char *msgDados, int sequencia){
 	msg->ini = (unsigned char)BIT_INICIO;
 	msg->tam = strlen(msgDados); // guarda o tamanho da mensagem em bytes
-	msg->sequencia = 0x00; 
+	msg->sequencia = sequencia; 
 	msg->tipo = msgTipo;
 
 	if(msgDados == NULL)
