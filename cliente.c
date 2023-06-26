@@ -4,7 +4,7 @@
 #include "message.h"
 #include "command.h"
 
-#define ETHERNET "lo"
+#define ETHERNET "enp2s0"
 #define TIMEOUT 0xFF
 
 int main(int argc, char *argv[]) {
@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     // char *token = NULL;
 
     // printf("Mensagem: %s\n", mensagem);
-    clientSocket = ConexaoRawSocket(ETHERNET);
+    clientSocket = ConexaoRawSocket("enp2s0");
     while(1) {
         fgets(comando, sizeof(comando), stdin);
         // token = strtok(comando, " ");

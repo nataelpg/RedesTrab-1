@@ -31,17 +31,18 @@ int backupArquivo(const char *argumento, int clientSocket) {
         }
 
         int sequencia = (filesize + TAM_BUFFER_DADOS - 1) / TAM_BUFFER_DADOS;
-        printf ("Sequencia: %d\n", sequencia);
         int resto = filesize % TAM_BUFFER_DADOS;
         int i;
 
-        for (i = 0; i < sequencia + 1; i++) {
+        for (i = 0; i < sequencia; i++) {
             int tamDados = (i == sequencia - 1 && resto > 0) ? resto : TAM_BUFFER_DADOS;
             unsigned char parte[TAM_BUFFER_DADOS];
             memcpy(parte, arquivo + i * TAM_BUFFER_DADOS, tamDados);
 
             msg = CriaMensagem(1, parte, i, tamDados);
             ssize_t sentBytes = send(clientSocket, msg, 67, 0);
+            printf ("Sequencia: %d\n", sequencia);
+            printf ("tamanho dados: %d\n", msg->tam);
             if (sentBytes == -1) {
                 perror("Erro ao enviar mensagem");
                 fclose(arq);
@@ -49,7 +50,7 @@ int backupArquivo(const char *argumento, int clientSocket) {
                 free(msg);
                 return 1;
             }
-            printf("Mensagem enviada: %s\n", msg->dados);
+            /* printf("Mensagem enviada: %s\n", msg->dados); */
         }
 
         fclose(arq);

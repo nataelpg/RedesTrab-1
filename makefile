@@ -1,40 +1,38 @@
-FLAGS = -Wall -std=c99
+FLAGS = -Wall -std=c99 -lm -lcrypto -lssl
 OBJS = message.o command.o
-PROG = cliente
 
-.PHONY: all debug clean purge
+# .PHONY: all debug clean purge
 
-%.o: %.c %.h
-	$(CC) $(CFLAGS) -c $< -o $@
+# %.o: %.c %.h
+# 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(PROG): % : $(OBJS) %.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+# $(PROG): % : $(OBJS) %.o
+# 	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
 
-all: client server $(PROG)  # Add $(PROG) to the 'all' target
+all: cliente server
 
-client: client.o $(OBJS)
-	gcc -o client client.o $(OBJS) $(FLAGS)
+cliente: cliente.o $(OBJS)
+	gcc -o cliente cliente.o $(OBJS) $(FLAGS)
 
 server: server.o $(OBJS)
 	gcc -o server server.o $(OBJS) $(FLAGS)
 
-command: command.o $(OBJS)
-	gcc -o command command.o $(OBJS) $(FLAGS)
-
-command.o: command.c
-	gcc -c command.c $(FLAGS)
-
 message.o: message.c
 	gcc -c message.c $(FLAGS)
 
-client.o: client.c
-	gcc -c client.c $(FLAGS)
+cliente.o: cliente.c
+	gcc -c cliente.c $(FLAGS)
 
 server.o: server.c
 	gcc -c server.c $(FLAGS)
 
+command.o: command.c
+	gcc -c command.c $(FLAGS)
+
 clean:
-	@rm -f ~.bak .tmp
+	@rm -f *~ *.bak *.tmp
 
 purge: clean
-	@rm -f $(PROG) $(PROG_AUX).o
+	@rm -f  $(PROG) $(PROG_AUX) *.o $(OBJS) core a.out
+	@rm -f *.png marker.out *.log
+

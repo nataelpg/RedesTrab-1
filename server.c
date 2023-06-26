@@ -1,16 +1,16 @@
 #include "message.h"
 #include <sys/stat.h>
 #include <time.h>
-#define ETHERNET "lo"
+#define ETHERNET "enp2s0"
 
 int main(int argc, char *argv[]) {
-    int serverSocket = ConexaoRawSocket(ETHERNET);
+    int serverSocket = ConexaoRawSocket("enp2s0");
     char path[1024];
     getcwd(path, sizeof(path)); // stores the current directory path
     if (access("output.txt", F_OK) != -1) {
         remove("output.txt");
     }
-    FILE* file = fopen("output.txt", "w");
+    FILE* file = fopen("output.txt", "wb");
     if (!file) {
         printf("Error opening file.\n");
         return 1;
@@ -29,14 +29,15 @@ int main(int argc, char *argv[]) {
         socklen_t addr_len = sizeof(addr);
         // se o arquivo já existe no diretório atual, não é necessário fazer backup
         recv(serverSocket, &receivedMsg, 67, 0);
-        printf("Tipo da mensagem: %d\n", receivedMsg.tipo);
+        /* printf("Tipo da mensagem: %d\n", receivedMsg.tipo); */
         printf ("tamanho da mensagem: %d\n", receivedMsg.tam);
-        printf ("Dados da mensagem: %s\n", receivedMsg.dados);
+        printf ("tamanho da mensagem2: %d\n", strlen(receivedMsg.dados));
+        /* printf ("Dados da mensagem: %s\n", receivedMsg.dados); */
         if (receivedMsg.tam > 0) {
             printf("%s\n", receivedMsg.dados);
             fwrite(receivedMsg.dados, sizeof(unsigned char), strlen(receivedMsg.dados), file);
+            printf("Sequencia: %d\n", receivedMsg.sequencia);
             fflush(file);
-            printf("Sequencia da mensagem Original: %d\n", receivedMsg.sequencia);  
         }
     }
     return 0;

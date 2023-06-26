@@ -12,6 +12,8 @@
 #include <sys/socket.h>  
 #include <netinet/in.h>   
 #include <unistd.h>   
+#include <errno.h>
+
 
 //código dos tipos
 #define MESSAGE_H

@@ -8,6 +8,7 @@ int ConexaoRawSocket(char *device)
   struct packet_mreq mr;
 
   soquete = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));  	/*cria socket*/
+  printf(" %s\n",strerror(errno));
   if (soquete == -1) {
     printf("Erro no Socket\n");
     exit(-1);
@@ -16,6 +17,7 @@ int ConexaoRawSocket(char *device)
   memset(&ir, 0, sizeof(struct ifreq));  	/*dispositivo eth0*/
   memcpy(ir.ifr_name, device, sizeof(device));
   if (ioctl(soquete, SIOCGIFINDEX, &ir) == -1) {
+    printf(" %s\n",strerror(errno));
     printf("Erro no ioctl\n");
     exit(-1);
   }
@@ -29,7 +31,6 @@ int ConexaoRawSocket(char *device)
     printf("Erro no bind\n");
     exit(-1);
   }
-
 
   memset(&mr, 0, sizeof(mr));          /*Modo Promiscuo*/
   mr.mr_ifindex = ir.ifr_ifindex;
@@ -51,6 +52,7 @@ mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned
 	msg->tipo = msgTipo;
   msg->paridade = 0;
 	memcpy(msg->dados, msgDados, tamDados);
+  printf ("tamanho dados: %d\n", strlen);
 
   return msg;
 }
