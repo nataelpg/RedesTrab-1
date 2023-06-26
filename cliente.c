@@ -4,7 +4,7 @@
 #include "message.h"
 #include "command.h"
 
-#define ETHERNET "lo"
+#define ETHERNET "enp2s0"
 #define TIMEOUT 0xFF
 
 int main(int argc, char *argv[]) {
