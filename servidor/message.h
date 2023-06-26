@@ -37,17 +37,17 @@
 #define TAM_BUFFER_DADOS 63 //tamanho do buffer de dados 
 
 struct mensagem {
-	unsigned int ini:8;
-	unsigned int tam:6;
-	unsigned int sequencia:6;
-	unsigned int tipo:4;
-	unsigned char* dados[TAM_BUFFER_DADOS];
-	unsigned int paridade:8; 
+	unsigned char ini:8;
+	unsigned char tam:6;
+	unsigned char sequencia:6;
+	unsigned char tipo:4;
+	char dados[TAM_BUFFER_DADOS];
+	char paridade:8; 
 };
 typedef struct mensagem mensagem_t;
 
 int ConexaoRawSocket(char* socket); //Cria socket
-mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned int sequencia, int tamDados); //Cria a mensagem que será mandada por parametro
-unsigned char *readArchive(FILE *file, int* tamArquivo);
+void CriaMensagem(mensagem_t *msg, char msgTipo, char *msgDados, int sequencia); //Cria a mensagem que será mandada por parametro
+unsigned char *readArchive(FILE *file);
 
 #endif

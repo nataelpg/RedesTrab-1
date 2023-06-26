@@ -42,28 +42,33 @@ int ConexaoRawSocket(char *device)
   return soquete;
 }
 
-mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned int sequencia, int tamDados){
-  mensagem_t *msg = malloc(sizeof(mensagem_t));
-
+void CriaMensagem(mensagem_t *msg, char msgTipo, char *msgDados, int sequencia){
 	msg->ini = BIT_INICIO;
-	msg->tam = tamDados; // guarda o tamanho da mensagem em bytes
+	msg->tam = strlen(msg->dados); // guarda o tamanho da mensagem em bytes
 	msg->sequencia = sequencia; 
 	msg->tipo = msgTipo;
-  msg->paridade = 0;
-	memcpy(msg->dados, msgDados, tamDados);
 
-  return msg;
+	if(msgDados == NULL)
+		memset(msg->dados, sequencia, sizeof(msg->dados));
+	else
+		strcpy(msg->dados, msgDados);
 }
 
-unsigned char *readArchive(FILE *file, int *outFileSize) {
-    int fileSize = 0;
-    unsigned char *fileContent = NULL;
-    int c;
-    while ((c = fgetc(file)) != EOF)
-        fileSize++;
+unsigned char *readArchive(FILE *file) {
+
+    int count = 0;
+    while(fgetc(file) != EOF)
+        count++;
+
+    printf("%d\n", count);
     rewind(file);
-    fileContent = malloc(fileSize);
-    fread(fileContent, fileSize, 1, file);
-    *outFileSize = fileSize;
+    unsigned char *fileContent = malloc(sizeof(unsigned char)*count + 1);
+    if(!fileContent)
+        return NULL;
+    
+    for(int i=0; i<count+1; i++)
+        fscanf(file, "%c", &fileContent[i]);
+    
     return fileContent;
+
 }

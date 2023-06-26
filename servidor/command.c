@@ -13,48 +13,46 @@ void lsDir(char *comando) {
     }
 }
 
-int backupArquivo(const char *argumento, int clientSocket) {
+int backupArquivo(char* argumento, int clientSocket, mensagem_t msg) {
     if (argumento) {
-        mensagem_t *msg;
-        FILE *arq = fopen(argumento, "rb");
+        FILE* arq = fopen(argumento, "r");
         if (!arq) {
-            perror("Erro ao abrir o arquivo");
+            printf("Erro ao abrir o arquivo.\n");
             return 1;
         }
-
-        int filesize;
-        unsigned char *arquivo = readArchive(arq, &filesize);
+        unsigned char *arquivo = readArchive(arq);
         if (!arquivo) {
             printf("Erro ao ler o arquivo.\n");
             fclose(arq);
             return 1;
         }
+        // Send the filename to the server
 
-        int sequencia = (filesize + TAM_BUFFER_DADOS - 1) / TAM_BUFFER_DADOS;
-        printf ("Sequencia: %d\n", sequencia);
-        int resto = filesize % TAM_BUFFER_DADOS;
-        int i;
+        printf("Mensagem: %s\n", arquivo);
 
-        for (i = 0; i < sequencia + 1; i++) {
-            int tamDados = (i == sequencia - 1 && resto > 0) ? resto : TAM_BUFFER_DADOS;
-            unsigned char parte[TAM_BUFFER_DADOS];
-            memcpy(parte, arquivo + i * TAM_BUFFER_DADOS, tamDados);
+        if (strlen(arquivo) > TAM_BUFFER_DADOS) {
+            int sequencia = strlen(arquivo) / TAM_BUFFER_DADOS;
+            int resto = strlen(arquivo) % TAM_BUFFER_DADOS;
 
-            msg = CriaMensagem(1, parte, i, tamDados);
-            ssize_t sentBytes = send(clientSocket, msg, 67, 0);
-            if (sentBytes == -1) {
-                perror("Erro ao enviar mensagem");
-                fclose(arq);
-                free(arquivo);
-                free(msg);
-                return 1;
+            for (int i = 0; i < sequencia + 1; i++) {
+                char parte[TAM_BUFFER_DADOS + 1];
+                strncpy(parte, (const char*)arquivo + (i * TAM_BUFFER_DADOS), TAM_BUFFER_DADOS);
+                parte[TAM_BUFFER_DADOS] = '\0';  // Adiciona o caractere nulo ao final da parte
+
+                // se o tamanho da parte for menor que o tamanho do buffer, preenche com 0 o restante
+                if (strlen(parte) < TAM_BUFFER_DADOS) {
+                    int j;
+                    for (j = strlen(parte); j < TAM_BUFFER_DADOS; j++) {
+                        // parte[j] = '0';
+                    }
+                }
+
+                CriaMensagem(&msg, BACKUP, parte, sequencia);
+                send(clientSocket, &msg, sizeof(msg), 0);
+                printf("Mensagem enviada: %s\n", msg.dados);
             }
-            printf("Mensagem enviada: %s\n", msg->dados);
         }
-
         fclose(arq);
-        free(arquivo);
-        free(msg);
     }
     return 0;
 }

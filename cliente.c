@@ -12,22 +12,9 @@ int main(int argc, char *argv[]) {
     char *path, comando[100], arg[100], *token = NULL;
     // char* comando, argumento;
     // char *token = NULL;
-    FILE* arq = fopen("input.txt", "r");
-    if (!arq) {
-        printf("Erro ao abrir o arquivo.\n");
-        return 1;
-    }
-    unsigned char *arquivo = readArchive(arq);
-    if (!arquivo) {
-        printf("Erro ao ler o arquivo.\n");
-        fclose(arq);
-        return 1;
-    }
-    fclose(arq);
 
     // printf("Mensagem: %s\n", mensagem);
     clientSocket = ConexaoRawSocket(ETHERNET);
-    mensagem_t msg;
     while(1) {
         fgets(comando, sizeof(comando), stdin);
         // token = strtok(comando, " ");
@@ -40,14 +27,15 @@ int main(int argc, char *argv[]) {
         token[strcspn(token, "\n")] = '\0';
         argumento = strtok(NULL, " ");
         if (argumento)
-            argumento[strcspn(argumento, "\n")] = '\0';
-
+            argumento[strcspn(argumento, "\n")] = '\0';      
         if (!strcmp(token, "cd")) {
             // enviaCD(comando);
         } else if (!strcmp(token, "ls")) {
             lsDir(argumento);
         } else if (!strcmp(token, "Backup") || !strcmp(token, "BACKUP") || !strcmp(token, "backup")) {
-            backupArquivo(argumento, clientSocket, msg);
+            // send (clientSocket, argumento, strlen(argumento) + 1, 0);
+            // printf ("Argumento: %s\n", argumento);
+            backupArquivo(argumento, clientSocket);
             /* putArchive(select = 1); */
         } else if (!strcmp(token, "get")){
 
