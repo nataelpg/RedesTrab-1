@@ -32,7 +32,6 @@
 #define ACK 1110
 #define NACK 1111
 
-
 #define BIT_INICIO 01111110 // 01111110 sequencia para começar a ler a mensagem
 #define TAM_BUFFER_DADOS 63 //tamanho do buffer de dados 
 
@@ -49,5 +48,6 @@ typedef struct mensagem mensagem_t;
 int ConexaoRawSocket(char* socket); //Cria socket
 void CriaMensagem(mensagem_t *msg, char msgTipo, char *msgDados, int sequencia); //Cria a mensagem que será mandada por parametro
 unsigned char *readArchive(FILE *file);
+void mandaResposta(int socket, mensagem_t* mensagem_recebida, int tipo);
 
 #endif

@@ -70,11 +70,11 @@ unsigned char *readArchive(FILE *file, int *outFileSize) {
     return fileContent;
 }
 
-void mandaResposta(int socket, mensagem_t* mensagem_recebida, int tipo) {
-  mensagem_t* resposta = malloc(69);
+void mandaResposta(int socket, int tipo) {
+  mensagem_t* resposta = malloc(67);
   resposta = CriaMensagem(tipo, NULL, 0, 0);
   printf("\nMandando mensagem: \n");
   printf("\nTipo: \n", resposta->tipo);
-  send(socket, resposta, 69, 0);
+  send(socket, resposta, 67, 0);
   free(resposta);
 }
