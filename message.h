@@ -12,7 +12,8 @@
 #include <sys/socket.h>  
 #include <netinet/in.h>   
 #include <unistd.h>   
-#include <errno.h>
+#include <errno.h> 
+#include "time.h"
 
 
 //código dos tipos
@@ -51,7 +52,8 @@ typedef struct mensagem mensagem_t;
 int ConexaoRawSocket(char* socket); //Cria socket
 mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned int sequencia, int tamDados); //Cria a mensagem que será mandada por parametro
 unsigned int *readArchive(FILE *file);
-void mandaResposta(int socket, unsigned int paridade, mensagem_t *msg);
+void mandaResposta(int socket, unsigned int paridade, int paridade_msg, mensagem_t *msg);
+void recebeConfirmacao(int socket, mensagem_t *msg);
 unsigned int calculaParidade(mensagem_t *mensagem);
 
 #endif

@@ -45,9 +45,11 @@ int backupArquivo(const char *argumento, int clientSocket) {
         int i = 0;
         while ((bytesRead = fread(arquivo, sizeof(unsigned char), sizeof(arquivo)*8 -1, arq)) > 62){ 
             msg = CriaMensagem(0, arquivo, i, TAM_BUFFER_DADOS);
-            send(clientSocket, msg, 67, 0);
+            printf("Dados enviados: %s\n", msg->dados);
             printf ("Sequencia: %d\n", msg->sequencia);
             printf ("tamanho dados: %d\n", msg->tam);
+            send(clientSocket, msg, 67, 0);
+            recebeConfirmacao(clientSocket, msg);
             i++;
         }
         if (TAM_BUFFER_DADOS > filesize-TAM_BUFFER_DADOS*i){ 

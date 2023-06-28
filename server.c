@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     int serverSocket = ConexaoRawSocket("lo");
     char path[1024];
     getcwd(path, sizeof(path)); // stores the current directory 
-    mensagem_t receivedMsg, *sentMsg;
+    mensagem_t receivedMsg, *sentMessage;
     struct sockaddr_ll addr;
     socklen_t addr_len = sizeof(addr);
     // recv(serverSocket, &receivedMsg, 67, 0);
@@ -42,10 +42,11 @@ int main(int argc, char *argv[]) {
             fflush(file);
             // printf ("Paridade recebida: %d\n", receivedMsg.paridade);
             // printf ("Paridade calculada: %d\n", calculaParidade(&receivedMsg));
-            mandaResposta(socket, receivedMsg.paridade, &receivedMsg);
-        ultimaSequencia = receivedMsg.sequencia;
+            mandaResposta(serverSocket, receivedMsg.paridade, calculaParidade(&receivedMsg), sentMessage);
+            ultimaSequencia = receivedMsg.sequencia;
         }
         // else if ((receivedMsg.tipo == 0) && (receivedMsg.sequencia != ultimaSequencia) && (receivedMsg.ini == (unsigned char)BIT_INICIO))
     }
+    free(sentMessage);
     return 0;
 }
