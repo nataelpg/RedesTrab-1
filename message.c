@@ -50,31 +50,39 @@ mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned
 	msg->tam = tamDados; // guarda o tamanho da mensagem em bytes
 	msg->sequencia = sequencia; 
 	msg->tipo = msgTipo;
-  msg->paridade = 0;
 	memcpy(msg->dados, msgDados, tamDados);
+  msg->paridade = calculaParidade(msg);
 
   return msg;
 }
 
-unsigned char *readArchive(FILE *file, int *outFileSize) {
+unsigned int *readArchive(FILE *file) {
     int fileSize = 0;
-    unsigned char *fileContent = NULL;
     int c;
     while ((c = fgetc(file)) != EOF)
         fileSize++;
     rewind(file);
-    fileContent = malloc(fileSize);
-    fread(fileContent, fileSize, 1, file);
-    printf("conteudo do arquivo: %s\n", fileContent);
-    *outFileSize = fileSize;
-    return fileContent;
+
+    return fileSize;
 }
 
-void mandaResposta(int socket, int tipo) {
-  mensagem_t* resposta = malloc(67);
-  resposta = CriaMensagem(tipo, NULL, 0, 0);
-  printf("\nMandando mensagem: \n");
-  printf("\nTipo: \n", resposta->tipo);
-  send(socket, resposta, 67, 0);
-  free(resposta);
+void mandaResposta(int socket, unsigned int paridade, mensagem_t *msg) {
+  if (calculaParidade(msg) == paridade){
+    msg = CriaMensagem(14, "", 0, 3);
+    printf ("Ack enviado!\n");
+  }
+  else {
+    msg = CriaMensagem(15, "", 0, 3);
+    printf ("NACK enviado!\n");
+  }
+  // send(socket, &msg, 67, 0);
+}
+
+unsigned int calculaParidade(mensagem_t *mensagem) {
+    unsigned int paridade = 0;
+    int i;
+    printf("%d\n", mensagem->tam);
+    for(i=0; i<mensagem->tam; i++)
+      paridade ^= mensagem->dados[i];
+    return paridade;
 }

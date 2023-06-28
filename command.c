@@ -23,7 +23,7 @@ int backupArquivo(const char *argumento, int clientSocket) {
             return 1;
         }
 
-        int filesize;
+        int filesize = readArchive(arq);
         // unsigned char *arquivo = readArchive(arq, &filesize);
         // if (!arquivo) {
         //     printf("Erro ao ler o arquivo.\n");
@@ -43,15 +43,16 @@ int backupArquivo(const char *argumento, int clientSocket) {
         // unsigned char buffer[1024];
         size_t bytesRead;
         int i = 0;
-        printf ("teste\n");
-        while ((bytesRead = fread(arquivo, sizeof(unsigned char), sizeof(arquivo)*8 -1, arq)) > 0){ 
-            int tamanho = sizeof(arquivo); 
-            printf ("bytesRead: %d\n", tamanho);
-            msg = CriaMensagem(1, arquivo, i, TAM_BUFFER_DADOS);
+        while ((bytesRead = fread(arquivo, sizeof(unsigned char), sizeof(arquivo)*8 -1, arq)) > 62){ 
+            msg = CriaMensagem(0, arquivo, i, TAM_BUFFER_DADOS);
             send(clientSocket, msg, 67, 0);
             printf ("Sequencia: %d\n", msg->sequencia);
             printf ("tamanho dados: %d\n", msg->tam);
             i++;
+        }
+        if (TAM_BUFFER_DADOS > filesize-TAM_BUFFER_DADOS*i){ 
+            msg = CriaMensagem(0, arquivo, i+1, filesize-TAM_BUFFER_DADOS*i);
+            send(clientSocket, msg, 67, 0);
         }
 
             // while ((bytesRead = fread(buffer, sizeof(unsigned char), sizeof(buffer), sourceFile)) > 0) {
