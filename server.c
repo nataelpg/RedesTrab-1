@@ -2,15 +2,18 @@
 #include <sys/stat.h>
 #include <time.h>
 #define ETHERNET "enp2s0"
+#define BIT_INICIO 01111110
 
 int main(int argc, char *argv[]) {
-    int serverSocket = ConexaoRawSocket("enp2s0");
+    int serverSocket = ConexaoRawSocket("lo");
     char path[1024];
-    getcwd(path, sizeof(path)); // stores the current directory path
+    getcwd(path, sizeof(path)); // stores the current directory 
+    mensagem_t receivedMsg;
+    // recv(serverSocket, &receivedMsg, 67, 0);
     if (access("output.txt", F_OK) != -1) {
         remove("output.txt");
     }
-    FILE* file = fopen("output.txt", "wb");
+    FILE* file = fopen("output.png", "wb");
     if (!file) {
         printf("Error opening file.\n");
         return 1;
@@ -21,24 +24,27 @@ int main(int argc, char *argv[]) {
     //     printf("Error setting line buffering mode for the file.\n");
     //     return 1;
     // }
-
+    int ultimaSequencia = 0;
     while (1) {
-        mensagem_t receivedMsg;
         char* comando = "";
         struct sockaddr_ll addr;
         socklen_t addr_len = sizeof(addr);
         // se o arquivo já existe no diretório atual, não é necessário fazer backup
-        recv(serverSocket, &receivedMsg, 67, 0);
         /* printf("Tipo da mensagem: %d\n", receivedMsg.tipo); */
         printf ("tamanho da mensagem: %d\n", receivedMsg.tam);
         printf ("tamanho da mensagem2: %d\n", strlen(receivedMsg.dados));
         /* printf ("Dados da mensagem: %s\n", receivedMsg.dados); */
-        if (receivedMsg.tam > 0) {
+        if (receivedMsg.sequencia == 0) {
+            ultimaSequencia = -1;
+        }
+        if ((receivedMsg.sequencia != ultimaSequencia) && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
             printf("%s\n", receivedMsg.dados);
             fwrite(receivedMsg.dados, sizeof(unsigned char), strlen(receivedMsg.dados), file);
             printf("Sequencia: %d\n", receivedMsg.sequencia);
             fflush(file);
         }
+        ultimaSequencia = receivedMsg.sequencia;
+        recv(serverSocket, &receivedMsg, 67, 0);
     }
     return 0;
 }

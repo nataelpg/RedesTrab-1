@@ -10,17 +10,11 @@
 int main(int argc, char *argv[]) {
     int clientSocket, i, select;
     char *path, comando[100], arg[100], *token = NULL;
-    // char* comando, argumento;
-    // char *token = NULL;
 
     // printf("Mensagem: %s\n", mensagem);
-    clientSocket = ConexaoRawSocket("enp2s0");
+    clientSocket = ConexaoRawSocket("lo");
     while(1) {
         fgets(comando, sizeof(comando), stdin);
-        // token = strtok(comando, " ");
-        // printf("%s\n", token);  //armazena o comando na variavel token 
-        // path = strtok(NULL, "\n");
-        // printf("%s\n", path);  //armazena o caminho na variavel path
         char *token = NULL;
         char *argumento = NULL;
         token = strtok(comando, " ");
@@ -29,14 +23,11 @@ int main(int argc, char *argv[]) {
         if (argumento)
             argumento[strcspn(argumento, "\n")] = '\0';      
         if (!strcmp(token, "cd")) {
-            // enviaCD(comando);
+            mudaDiretorio(argumento);
         } else if (!strcmp(token, "ls")) {
             lsDir(argumento);
         } else if (!strcmp(token, "Backup") || !strcmp(token, "BACKUP") || !strcmp(token, "backup")) {
-            // send (clientSocket, argumento, strlen(argumento) + 1, 0);
-            // printf ("Argumento: %s\n", argumento);
             backupArquivo(argumento, clientSocket);
-            /* putArchive(select = 1); */
         } else if (!strcmp(token, "get")){
 
             /* getArchive(); */

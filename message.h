@@ -43,7 +43,7 @@ struct mensagem {
 	unsigned int tam:6;
 	unsigned int sequencia:6;
 	unsigned int tipo:4;
-	unsigned char* dados[TAM_BUFFER_DADOS];
+	unsigned char dados[TAM_BUFFER_DADOS];
 	unsigned int paridade:8; 
 };
 typedef struct mensagem mensagem_t;
@@ -51,5 +51,6 @@ typedef struct mensagem mensagem_t;
 int ConexaoRawSocket(char* socket); //Cria socket
 mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned int sequencia, int tamDados); //Cria a mensagem que será mandada por parametro
 unsigned char *readArchive(FILE *file, int* tamArquivo);
+void mandaResposta(int socket, mensagem_t* mensagem_recebida, int tipo);
 
 #endif

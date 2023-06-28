@@ -52,7 +52,6 @@ mensagem_t *CriaMensagem(unsigned int msgTipo, unsigned char *msgDados, unsigned
 	msg->tipo = msgTipo;
   msg->paridade = 0;
 	memcpy(msg->dados, msgDados, tamDados);
-  printf ("tamanho dados: %d\n", strlen);
 
   return msg;
 }
@@ -66,6 +65,16 @@ unsigned char *readArchive(FILE *file, int *outFileSize) {
     rewind(file);
     fileContent = malloc(fileSize);
     fread(fileContent, fileSize, 1, file);
+    printf("conteudo do arquivo: %s\n", fileContent);
     *outFileSize = fileSize;
     return fileContent;
+}
+
+void mandaResposta(int socket, mensagem_t* mensagem_recebida, int tipo) {
+  mensagem_t* resposta = malloc(69);
+  resposta = CriaMensagem(tipo, NULL, 0, 0);
+  printf("\nMandando mensagem: \n");
+  printf("\nTipo: \n", resposta->tipo);
+  send(socket, resposta, 69, 0);
+  free(resposta);
 }
