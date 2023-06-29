@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define ETHERNET "enp2s0"
 #define BIT_INICIO 01111110
@@ -11,7 +12,7 @@ int main(int argc, char *argv[]) {
     int serverSocket = ConexaoRawSocket("lo");
     char path[1024];
     getcwd(path, sizeof(path)); // stores the current directory 
-    mensagem_t receivedMsg, *sentMessage;
+    mensagem_t receivedMsg, sentMsg;
     struct sockaddr_ll addr;
     socklen_t addr_len = sizeof(addr);
     // recv(serverSocket, &receivedMsg, 67, 0);
@@ -36,17 +37,18 @@ int main(int argc, char *argv[]) {
         // se o arquivo já existe no diretório atual, não é necessário fazer backup
         /* printf ("Dados da mensagem: %s\n", receivedMsg.dados); */
         recv(serverSocket, &receivedMsg, 67, 0);
-        if (receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
-            /* printf("Tipo da mensagem: %d\n", receivedMsg.tipo); */
-            fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
-            fflush(file);
-            // printf ("Paridade recebida: %d\n", receivedMsg.paridade);
-            // printf ("Paridade calculada: %d\n", calculaParidade(&receivedMsg));
-            mandaResposta(serverSocket, receivedMsg.paridade, calculaParidade(&receivedMsg), sentMessage);
+        printf("%d\n", receivedMsg.sequencia);
+        if(strlen(receivedMsg.dados) != 0) { 
+            if ((receivedMsg.sequencia != ultimaSequencia) && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+                /* printf("Tipo da mensagem: %d\n", receivedMsg.tipo); */
+                printf("%s\n", receivedMsg.dados);
+                fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
+                fflush(file);
+                mandaResposta(serverSocket, receivedMsg, &sentMsg);
+            }
             ultimaSequencia = receivedMsg.sequencia;
         }
-        // else if ((receivedMsg.tipo == 0) && (receivedMsg.sequencia != ultimaSequencia) && (receivedMsg.ini == (unsigned char)BIT_INICIO))
     }
-    free(sentMessage);
+    fclose(file);
     return 0;
 }

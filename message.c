@@ -66,14 +66,14 @@ unsigned int *readArchive(FILE *file) {
     return fileSize;
 }
 
-void mandaResposta(int socket, unsigned int paridade, int paridade_msg, mensagem_t *msg) {
-  if (paridade_msg == paridade){
+void mandaResposta(int socket,mensagem_t receivedMsg, mensagem_t *msg) {
+  if (receivedMsg.paridade == calculaParidade(&receivedMsg)) {
     msg = CriaMensagem(14, NULL, 0, 0);
-    // printf ("Ack enviado!\n");
+    printf ("Ack enviado!\n");
   }
   else {
     msg = CriaMensagem(15, NULL, 0, 0);
-    // printf ("NACK enviado!\n");
+    printf ("NACK enviado!\n");
   }
   send(socket, msg, 67, 0);
 }
@@ -97,6 +97,7 @@ void recebeConfirmacao(int socket, mensagem_t *msg) {
       }
       else if(receivedMsg.tipo == 14) {
         printf("Ack recebido!\n");
+        printf("%d\n", receivedMsg.tipo);
         break;
       }
       else if(receivedMsg.tipo == 15) {
