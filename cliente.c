@@ -29,8 +29,7 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(token, "Backup") || !strcmp(token, "BACKUP") || !strcmp(token, "backup")) {
             backupArquivo(argumento, clientSocket);
         } else if (!strcmp(token, "get")){
-
-            /* getArchive(); */
+            recuperaArquivo(argumento, clientSocket);
         } else if(!strcmp(token, "exit")){
             
             break;

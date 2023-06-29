@@ -32,19 +32,25 @@ int main(int argc, char *argv[]) {
     // }
 
     int ultimaSequencia = -1;
+    int zero = 0;
     while (1) {
         char* comando = "";
         // se o arquivo já existe no diretório atual, não é necessário fazer backup
         /* printf ("Dados da mensagem: %s\n", receivedMsg.dados); */
         recv(serverSocket, &receivedMsg, 67, 0);
-        printf("%d\n", receivedMsg.sequencia);
+        printf("%d\n", receivedMsg.sequencia); 
+        printf("%d\n", ultimaSequencia); 
         if(strlen(receivedMsg.dados) != 0) { 
-            if ((receivedMsg.sequencia != ultimaSequencia) && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+            if (((receivedMsg.sequencia == ultimaSequencia + 1) || ((receivedMsg.sequencia == 0) && zero == 0)) && (receivedMsg.ini == (unsigned char)BIT_INICIO) && (receivedMsg.tipo)) {
                 /* printf("Tipo da mensagem: %d\n", receivedMsg.tipo); */
                 printf("%s\n", receivedMsg.dados);
                 fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
                 fflush(file);
-                mandaResposta(serverSocket, receivedMsg, &sentMsg);
+                mandaResposta(serverSocket, &receivedMsg, &sentMsg);
+                zero = 1;
+            }
+            if(receivedMsg.tipo == 2) {
+                
             }
             ultimaSequencia = receivedMsg.sequencia;
         }

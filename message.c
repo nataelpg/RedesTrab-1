@@ -66,8 +66,8 @@ unsigned int *readArchive(FILE *file) {
     return fileSize;
 }
 
-void mandaResposta(int socket,mensagem_t receivedMsg, mensagem_t *msg) {
-  if (receivedMsg.paridade == calculaParidade(&receivedMsg)) {
+void mandaResposta(int socket, mensagem_t* receivedMsg, mensagem_t *msg) {
+  if (receivedMsg->paridade == calculaParidade(receivedMsg)) {
     msg = CriaMensagem(14, NULL, 0, 0);
     printf ("Ack enviado!\n");
   }

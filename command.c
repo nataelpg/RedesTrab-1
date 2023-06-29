@@ -102,3 +102,52 @@ void mudaDiretorio(char *path) {
         perror("getcwd() error");
     }
 }
+
+int recuperaArquivo(const char *argumento, int clientSocket) {
+    if (! argumento)
+        return 1;
+
+    FILE* arq = fopen(argumento, "wb");
+    if (!arq) {
+        printf("Erro ao abrir o arquivo.");
+        return 1;
+    }
+
+    int tamanho = readArchive(arq);
+
+    mensagem_t *receivedMsg;
+    mensagem_t* sentMsg = calloc(1, sizeof(mensagem_t)+1);
+
+    receivedMsg = CriaMensagem(2, argumento, 0, TAM_BUFFER_DADOS);
+    send(clientSocket, receivedMsg, 67, 0);
+
+    unsigned char* arquivo = malloc(sizeof(unsigned char) * TAM_BUFFER_DADOS);
+    ssize_t recvReturn;
+
+    while(1) {
+        recvReturn = recv(clientSocket, receivedMsg, 67, 0);
+        if(recvReturn == -1) {
+            printf("Timeout!");
+            continue;
+        } else {
+            if(receivedMsg->ini == (unsigned char)BIT_INICIO) {
+                if(receivedMsg->tipo == 8) {
+                    printf("Dados recebidos\n");
+                    fwrite(arquivo, sizeof(char), receivedMsg->tam, arq);
+                    mandaResposta(clientSocket, receivedMsg, sentMsg);
+                } 
+                else if(receivedMsg->tipo == 9) {
+                    printf("Final do arquivo\n");
+                    mandaResposta(clientSocket, receivedMsg, sentMsg);
+                    fclose(arq);
+                    free(arquivo);
+                    return;
+                }
+            }
+        }
+    }
+
+    free(arquivo);
+    free(receivedMsg);
+    return 0;
+}
