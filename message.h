@@ -40,7 +40,7 @@
 
 #define BIT_INICIO 01111110 // 01111110 sequencia para começar a ler a mensagem
 #define TAM_BUFFER_DADOS 63 //tamanho do buffer de dados 
-
+#define MAX_VEZES 100 // numero maximo de vezes que o servidor pode tentar enviar a mensagem
 struct mensagem {
 	unsigned int ini:8;
 	unsigned int tam:6;

@@ -78,15 +78,15 @@ void mandaResposta(int socket, mensagem_t* receivedMsg, mensagem_t *msg) {
   // printf ("mensagem_t enviada: %d\n", msg->tipo);
   send(socket, msg, 67, 0);
 }
-/*
-int setSocketTimeout(int socket) {
+
+/* int setSocketTimeout(int socket) {
     struct timeval timeout;
     timeout.tv_sec = 2;
     timeout.tv_usec = 0;
 
     return setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout));
-}
-*/
+} */
+
 void recebeConfirmacao(int socket, mensagem_t *msg) {
   ssize_t recvReturn;
   mensagem_t receivedMsg;
@@ -109,7 +109,6 @@ void recebeConfirmacao(int socket, mensagem_t *msg) {
       }
       else if(receivedMsg.tipo == 14) {
         printf("Ack recebido!\n");
-        printf("%d\n", receivedMsg.tipo);
         break;
       }
       else if(receivedMsg.tipo == 15) {

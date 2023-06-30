@@ -7,7 +7,6 @@
 
 #define ETHERNET "enp2s0"
 #define BIT_INICIO 01111110
-#define MAX_VEZES 100
 
 int main(int argc, char *argv[]) {
     int serverSocket = ConexaoRawSocket(ETHERNET);
@@ -20,28 +19,15 @@ int main(int argc, char *argv[]) {
 
     FILE* file = NULL;
     int ultimaSequencia = -1;
-    int timeoutCount = 0;
     while (1) {
         recv(serverSocket, &receivedMsg, 67, 0); 
-        printf("DADO RECEBIDO: %s\n", receivedMsg.dados);
-        //if() {
-            if ((receivedMsg.tipo == 0) && receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO) && (file != NULL) && (timeoutCount < MAX_VEZES)) {
-                printf ("Dados recebidos: %s\n", receivedMsg.dados);
-                printf ("tamanho recebido: %d\n", receivedMsg.tam);
-                fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
-                fflush(file);
-                mandaResposta(serverSocket, &receivedMsg, sentMsg);
-                /* if(sentMsg->tipo == 15) {
-                    timeoutCount++;
-                }
-                else {
-                    timeoutCount = 0;
-                } */
-                printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
-                //ultimaSequencia = receivedMsg.sequencia;
-            }
-        //} else {
-
+        if ((receivedMsg.tipo == 0) && receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO) && (file != NULL)) {
+            fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
+            fflush(file);
+            mandaResposta(serverSocket, &receivedMsg, sentMsg);
+            printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
+            //ultimaSequencia = receivedMsg.sequencia;
+        }
         
         if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 11  && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
             printf("Nome do arquivo: %s\n", receivedMsg.dados);
@@ -61,7 +47,6 @@ int main(int argc, char *argv[]) {
         else if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 9  && (receivedMsg.ini == (unsigned char)BIT_INICIO) && (file != NULL)) {
         {
             printf("Final do arquivo\n");
-            printf("Tamanho do arquivo: %d\n", receivedMsg.tam);
             printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
             fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
             fflush(file);
@@ -70,10 +55,12 @@ int main(int argc, char *argv[]) {
             printf("Arquivo recebido com sucesso!\n");
             continue;
         }      
-        //ultimaSequencia = -1;        
+        //ultimaSequencia = -1;         
+ 
         } else if((receivedMsg.tipo == 2) && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
-            backupArquivo(receivedMsg.dados, serverSocket);
             printf ("Nome do arquivo: %s\n", receivedMsg.dados);
+            mandaResposta(serverSocket, &receivedMsg, sentMsg);
+            backupArquivo(receivedMsg.dados, serverSocket);
         }
     }
     fclose(file);

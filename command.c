@@ -30,7 +30,6 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
 
         msg = CriaMensagem(11, argumento, 0, strlen(argumento));
         // IMPRIME ENVIA_NOME
-        printf ("tipo mensagem: %d\n", msg->tipo);
         send(clientSocket, msg, 67, 0);
         recebeConfirmacao(clientSocket, msg);
         // unsigned char buffer[1024];
@@ -40,24 +39,15 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
             msg = CriaMensagem(0, arquivo, i, TAM_BUFFER_DADOS);
             send(clientSocket, msg, 67, 0);
             printf ("Sequencia: %d\n", msg->sequencia);
-            printf ("tamanho dados: %d\n", msg->tam);
-            printf ("Dado: %s\n", msg->dados);
             recebeConfirmacao(clientSocket, msg);
-            printf("RECEBIDO O ACK DO %d - VOU ENVIAR A PROXIMA\n", i);
             i++;
         }
-        // msg = CriaMensagem(0, arquivo, i, TAM_BUFFER_DADOS);
-        // send(clientSocket, msg, 67, 0);
-        // printf ("Sequencia: %d\n", msg->sequencia);
-        // printf ("tamanho dados: %d\n", msg->tam);
-        // printf ("Dado: %s\n", msg->dados);
-        // recebeConfirmacao(clientSocket, msg);
-        // printf("RECEBIDO O ACK DO %d - VOU ENVIAR A PROXIMA\n", i);
         if (TAM_BUFFER_DADOS > filesize-TAM_BUFFER_DADOS*i){ 
             msg = CriaMensagem(9, arquivo, i, filesize-TAM_BUFFER_DADOS*i);
             send(clientSocket, msg, 67, 0);
             recebeConfirmacao(clientSocket, msg);
         }
+        printf("Arquivo enviado com sucesso!\n");
         fclose(arq);
         free(arquivo);
         free(msg);
@@ -109,7 +99,6 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
     int ultimaSequencia = -1;
     while(1) {
         recvReturn = recv(clientSocket, receivedMsg, 67, 0);
-        printf ("sequencia recebida: %d\n", receivedMsg->sequencia);
         if(recvReturn == -1) {
             printf("Timeout!");
             continue;
@@ -127,7 +116,6 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
                 else if(receivedMsg->tipo == 9 && receivedMsg->sequencia != ultimaSequencia) {
                 {
                     printf ("sequencia recebida: %d\n", receivedMsg->sequencia);
-                    printf ("ultima sequencia: %d\n", ultimaSequencia);
                     printf("Final do arquivo\n");
                     fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
                     fflush(arq);
