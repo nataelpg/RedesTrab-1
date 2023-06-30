@@ -78,7 +78,7 @@ void mandaResposta(int socket, mensagem_t* receivedMsg, mensagem_t *msg) {
   // printf ("mensagem_t enviada: %d\n", msg->tipo);
   send(socket, msg, 67, 0);
 }
-
+/*
 int setSocketTimeout(int socket) {
     struct timeval timeout;
     timeout.tv_sec = 2;
@@ -86,11 +86,11 @@ int setSocketTimeout(int socket) {
 
     return setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout));
 }
-
+*/
 void recebeConfirmacao(int socket, mensagem_t *msg) {
   ssize_t recvReturn;
   mensagem_t receivedMsg;
-  setSocketTimeout(socket);
+  //setSocketTimeout(socket);
   
   while(1) {
     recvReturn = recv(socket, &receivedMsg, 67, 0);
@@ -114,6 +114,7 @@ void recebeConfirmacao(int socket, mensagem_t *msg) {
       }
       else if(receivedMsg.tipo == 15) {
         printf("Nack recebido!\n"); 
+        printf("Dados reenviados ao cliente: %s\n", receivedMsg.dados);
         send(socket, msg, 67, 0);
         continue;
       }

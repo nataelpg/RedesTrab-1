@@ -32,6 +32,7 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
         // IMPRIME ENVIA_NOME
         printf ("tipo mensagem: %d\n", msg->tipo);
         send(clientSocket, msg, 67, 0);
+        recebeConfirmacao(clientSocket, msg);
         // unsigned char buffer[1024];
         size_t bytesRead;
         int i = 0;
