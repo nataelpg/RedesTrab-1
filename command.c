@@ -123,7 +123,7 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
                     fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
                     ultimaSequencia = receivedMsg->sequencia;
-                    return;
+                    break;
                 }
                 ultimaSequencia = -1;
                 }
