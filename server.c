@@ -15,37 +15,47 @@ int main(int argc, char *argv[]) {
     struct sockaddr_ll addr;
     socklen_t addr_len = sizeof(addr);
     // recv(serverSocket, &receivedMsg, 67, 0);
-    if (access("output.png", F_OK) != -1) {
-        remove("output.png");
-    }
-    FILE* file = fopen("output.png", "wb");
-    if (!file) {
-        printf("Error opening file.\n");
-        return 1;
-    }
 
-    // Set line buffering for the file stream
-    // if (setvbuf(file, NULL, _IOLBF, 0) != 0) {
-    //     printf("Error setting line buffering mode for the file.\n");
-    //     return 1;
-    // }
-
+    FILE* file = NULL;
     int ultimaSequencia = -1;
     while (1) {
         char* comando = "";
-        // se o arquivo já existe no diretório atual, não é necessário fazer backup
-        /* printf ("Dados da mensagem: %s\n", receivedMsg.dados); */
-        recv(serverSocket, &receivedMsg, 67, 0);
-        if (receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
-            /* printf("Tipo da mensagem: %d\n", receivedMsg.tipo); */
+        recv(serverSocket, &receivedMsg, 67, 0);        
+        if ((receivedMsg.tipo == 0) && receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
             fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
             fflush(file);
-            // printf ("Paridade recebida: %d\n", receivedMsg.paridade);
-            // printf ("Paridade calculada: %d\n", calculaParidade(&receivedMsg));
-            mandaResposta(socket, receivedMsg.paridade, &receivedMsg);
-        ultimaSequencia = receivedMsg.sequencia;
+            mandaResposta(serverSocket, &receivedMsg, sentMsg);
+            printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
+            ultimaSequencia = receivedMsg.sequencia;
         }
-        // else if ((receivedMsg.tipo == 0) && (receivedMsg.sequencia != ultimaSequencia) && (receivedMsg.ini == (unsigned char)BIT_INICIO))
+        if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 11  && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+            printf("Nome do arquivo: %s\n", receivedMsg.dados);
+            // se ja existe o arquivo o apaga 
+            if (access(receivedMsg.dados, F_OK) != -1) {
+                remove(receivedMsg.dados);
+            }
+            file = fopen(receivedMsg.dados, "wb");
+            if (!file) {
+                printf("Error opening file.\n");
+                return 1;
+            }
+            ultimaSequencia = -1;
+            continue;
+        }
+        else if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 9  && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+        {
+            printf("Tamanho do arquivo: %d\n", receivedMsg.tam);
+            printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
+            fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
+            fflush(file);
+            ultimaSequencia = receivedMsg.sequencia;
+            continue;
+        }      
+            ultimaSequencia = -1;        
+        } else if((receivedMsg.tipo == 2) && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+            backupArquivo(receivedMsg.dados, serverSocket);
+        }
     }
+    fclose(file);
     return 0;
 }

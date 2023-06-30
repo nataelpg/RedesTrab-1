@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
 
     // printf("Mensagem: %s\n", mensagem);
     clientSocket = ConexaoRawSocket("lo");
-    while(1) {
+    while (1) {
         fgets(comando, sizeof(comando), stdin);
         char *token = NULL;
         char *argumento = NULL;
@@ -29,12 +29,9 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(token, "Backup") || !strcmp(token, "BACKUP") || !strcmp(token, "backup")) {
             backupArquivo(argumento, clientSocket);
         } else if (!strcmp(token, "get")){
-
-            /* getArchive(); */
+            recuperaArquivo(argumento, clientSocket);
         } else if(!strcmp(token, "exit")){
-            
             break;
         }
-    close(clientSocket);
     }
 }

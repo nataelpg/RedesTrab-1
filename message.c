@@ -66,22 +66,57 @@ unsigned int *readArchive(FILE *file) {
     return fileSize;
 }
 
-void mandaResposta(int socket, unsigned int paridade, mensagem_t *msg) {
-  if (calculaParidade(msg) == paridade){
-    msg = CriaMensagem(14, "", 0, 3);
+void mandaResposta(int socket, mensagem_t* receivedMsg, mensagem_t *msg) {
+  if (receivedMsg->paridade == calculaParidade(receivedMsg)) {
+    msg = CriaMensagem(14, NULL, 0, 0);
     printf ("Ack enviado!\n");
   }
   else {
-    msg = CriaMensagem(15, "", 0, 3);
+    msg = CriaMensagem(15, NULL, 0, 0);
     printf ("NACK enviado!\n");
   }
-  // send(socket, &msg, 67, 0);
+  send(socket, msg, 67, 0);
+}
+
+void recebeConfirmacao(int socket, mensagem_t *msg) {
+  ssize_t recvReturn;
+  mensagem_t receivedMsg;
+  while(1) {
+    recvReturn = recv(socket, &receivedMsg, 67, 0);
+    if (recvReturn == -1) {
+      printf("Retorno não recebido! Timeout!\n");
+      send(socket, msg, 67, 0);
+      continue;
+    }
+
+    // ver sequencia
+    if(receivedMsg.ini == (unsigned char)BIT_INICIO) {
+      if(receivedMsg.tipo == 13) {
+        printf("OK recebido!\n");
+        break;
+      }
+      else if(receivedMsg.tipo == 14) {
+        printf("Ack recebido!\n");
+        printf("%d\n", receivedMsg.tipo);
+        break;
+      }
+      else if(receivedMsg.tipo == 15) {
+        printf("Nack recebido!\n"); 
+        send(socket, msg, 67, 0);
+        continue;
+      }
+      else {
+        // printf("Mensagem inválida!\n");
+        send(socket, msg, 67, 0);
+        continue;
+      }
+    }
+  }
 }
 
 unsigned int calculaParidade(mensagem_t *mensagem) {
     unsigned int paridade = 0;
     int i;
-    printf("%d\n", mensagem->tam);
     for(i=0; i<mensagem->tam; i++)
       paridade ^= mensagem->dados[i];
     return paridade;
