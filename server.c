@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     int ultimaSequencia = -1;
     while (1) {
         recv(serverSocket, &receivedMsg, 67, 0); 
-        if ((receivedMsg.tipo == 0) && receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+        if ((receivedMsg.tipo == 0) && receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO) && (file != NULL)) {
             printf ("Dados recebidos: %s\n", receivedMsg.dados);
             printf ("tamanho recebido: %d\n", receivedMsg.tam);
             fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
             ultimaSequencia = -1;
             continue;
         }
-        else if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 9  && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+        else if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 9  && (receivedMsg.ini == (unsigned char)BIT_INICIO) && (file != NULL)) {
         {
             printf("Tamanho do arquivo: %d\n", receivedMsg.tam);
             printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);

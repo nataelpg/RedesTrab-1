@@ -69,23 +69,34 @@ unsigned int *readArchive(FILE *file) {
 void mandaResposta(int socket, mensagem_t* receivedMsg, mensagem_t *msg) {
   if (receivedMsg->paridade == calculaParidade(receivedMsg)) {
     msg = CriaMensagem(14, NULL, 0, 0);
-    printf ("Ack enviado!\n");
+    printf ("Ack do %d enviado!\n", receivedMsg->sequencia);
   }
   else {
     msg = CriaMensagem(15, NULL, 0, 0);
-    printf ("NACK enviado!\n");
+    printf ("NACK do %d enviado!\n", receivedMsg->sequencia);
   }
-  printf ("mensagem_t enviada: %d\n", msg->tipo);
+  // printf ("mensagem_t enviada: %d\n", msg->tipo);
   send(socket, msg, 67, 0);
+}
+
+int setSocketTimeout(int socket) {
+    struct timeval timeout;
+    timeout.tv_sec = 2;
+    timeout.tv_usec = 0;
+
+    return setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout));
 }
 
 void recebeConfirmacao(int socket, mensagem_t *msg) {
   ssize_t recvReturn;
   mensagem_t receivedMsg;
+  setSocketTimeout(socket);
+  
   while(1) {
     recvReturn = recv(socket, &receivedMsg, 67, 0);
     if (recvReturn == -1) {
       printf("Retorno não recebido! Timeout!\n");
+      // fazer timeout
       send(socket, msg, 67, 0);
       continue;
     }

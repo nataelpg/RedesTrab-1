@@ -32,7 +32,6 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
         // IMPRIME ENVIA_NOME
         printf ("tipo mensagem: %d\n", msg->tipo);
         send(clientSocket, msg, 67, 0);
-        printf ("mensagem enviada");
         // unsigned char buffer[1024];
         size_t bytesRead;
         int i = 0;
@@ -41,12 +40,22 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
             send(clientSocket, msg, 67, 0);
             printf ("Sequencia: %d\n", msg->sequencia);
             printf ("tamanho dados: %d\n", msg->tam);
+            printf ("Dado: %s\n", msg->dados);
             recebeConfirmacao(clientSocket, msg);
+            printf("RECEBIDO O ACK DO %d - VOU ENVIAR A PROXIMA\n", i);
             i++;
         }
+        // msg = CriaMensagem(0, arquivo, i, TAM_BUFFER_DADOS);
+        // send(clientSocket, msg, 67, 0);
+        // printf ("Sequencia: %d\n", msg->sequencia);
+        // printf ("tamanho dados: %d\n", msg->tam);
+        // printf ("Dado: %s\n", msg->dados);
+        // recebeConfirmacao(clientSocket, msg);
+        // printf("RECEBIDO O ACK DO %d - VOU ENVIAR A PROXIMA\n", i);
         if (TAM_BUFFER_DADOS > filesize-TAM_BUFFER_DADOS*i){ 
             msg = CriaMensagem(9, arquivo, i, filesize-TAM_BUFFER_DADOS*i);
             send(clientSocket, msg, 67, 0);
+            recebeConfirmacao(clientSocket, msg);
         }
         fclose(arq);
         free(arquivo);
@@ -123,14 +132,14 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
                     fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
                     ultimaSequencia = receivedMsg->sequencia;
-                    break;
+                    fclose(arq);
+                    free(receivedMsg);
+                    return;
                 }
                 ultimaSequencia = -1;
                 }
             }
         }
     }
-    fclose(arq);
-    free(receivedMsg);
     return 0;
 }

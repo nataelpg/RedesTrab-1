@@ -4,6 +4,8 @@
         "message.h": "c",
         "in.h": "c",
         "if_packet.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "string.h": "c",
+        "types.h": "c"
     }
 }
