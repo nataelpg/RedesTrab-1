@@ -45,7 +45,7 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
             i++;
         }
         if (TAM_BUFFER_DADOS > filesize-TAM_BUFFER_DADOS*i){ 
-            msg = CriaMensagem(9, arquivo, i+1, filesize-TAM_BUFFER_DADOS*i);
+            msg = CriaMensagem(9, arquivo, i, filesize-TAM_BUFFER_DADOS*i);
             send(clientSocket, msg, 67, 0);
         }
         fclose(arq);
@@ -94,7 +94,6 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
 
     receivedMsg = CriaMensagem(2, argumento, 0, TAM_BUFFER_DADOS);
     send(clientSocket, receivedMsg, 67, 0);
-    printf ("aaaaaa\n");
 
     ssize_t recvReturn;
     int ultimaSequencia = -1;
@@ -105,8 +104,8 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
             printf("Timeout!");
             continue;
         } else {
-            if(receivedMsg->ini == (unsigned char)BIT_INICIO && receivedMsg->sequencia != ultimaSequencia) {
-                if(receivedMsg->tipo == 0  ) {
+            if(receivedMsg->ini == (unsigned char)BIT_INICIO) {
+                if(receivedMsg->tipo == 0 && receivedMsg->sequencia != ultimaSequencia) {
                     printf ("sequencia recebida: %d\n", receivedMsg->sequencia);
                     printf("Dados recebidos\n");
                     fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
@@ -115,24 +114,23 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
                     ultimaSequencia = receivedMsg->sequencia;
                 } 
                 
-                else if(receivedMsg->tipo == 9) {
+                else if(receivedMsg->tipo == 9 && receivedMsg->sequencia != ultimaSequencia) {
                 {
+                    printf ("sequencia recebida: %d\n", receivedMsg->sequencia);
+                    printf ("ultima sequencia: %d\n", ultimaSequencia);
                     printf("Final do arquivo\n");
                     fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
                     fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
-                    printf ("menagem enviada\n");
                     ultimaSequencia = receivedMsg->sequencia;
-                    break;
+                    return;
                 }
                 ultimaSequencia = -1;
                 }
             }
         }
     }
-
     fclose(arq);
     free(receivedMsg);
-    free(sentMsg);
     return 0;
 }
