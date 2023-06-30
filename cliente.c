@@ -28,9 +28,9 @@ int main(int argc, char *argv[]) {
             lsDir(argumento);
         } else if (!strcmp(token, "Backup") || !strcmp(token, "BACKUP") || !strcmp(token, "backup")) {
             backupArquivo(argumento, clientSocket);
-        } else if (!strcmp(token, "get")){
+        } else if (!strcmp(token, "get")) {
             recuperaArquivo(argumento, clientSocket);
-        } else if(!strcmp(token, "exit")){
+        } else if(!strcmp(token, "exit")) {
             break;
         }
     }

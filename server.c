@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "command.h"
 
 #define ETHERNET "enp2s0"
 #define BIT_INICIO 01111110
@@ -19,13 +20,16 @@ int main(int argc, char *argv[]) {
     FILE* file = NULL;
     int ultimaSequencia = -1;
     while (1) {
-        char* comando = "";
+
         recv(serverSocket, &receivedMsg, 67, 0);        
         if ((receivedMsg.tipo == 0) && receivedMsg.sequencia != ultimaSequencia && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
+            //imprime campos da mensagem
+
             fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
             fflush(file);
             mandaResposta(serverSocket, &receivedMsg, sentMsg);
             printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
+
             ultimaSequencia = receivedMsg.sequencia;
         }
         if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 11  && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {

@@ -75,6 +75,7 @@ void mandaResposta(int socket, mensagem_t* receivedMsg, mensagem_t *msg) {
     msg = CriaMensagem(15, NULL, 0, 0);
     printf ("NACK enviado!\n");
   }
+  printf ("mensagem_t enviada: %d\n", msg->tipo);
   send(socket, msg, 67, 0);
 }
 

@@ -23,12 +23,6 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
         }
 
         int filesize = readArchive(arq);
-        // unsigned char *arquivo = readArchive(arq, &filesize);
-        // if (!arquivo) {
-        //     printf("Erro ao ler o arquivo.\n");
-        //     fclose(arq);
-        //     return 1;
-        // }
         unsigned char* arquivo = malloc(sizeof(unsigned char) * TAM_BUFFER_DADOS);
 
         // int sequencia = (filesize + TAM_BUFFER_DADOS - 1) / TAM_BUFFER_DADOS;
@@ -54,7 +48,6 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
             msg = CriaMensagem(9, arquivo, i+1, filesize-TAM_BUFFER_DADOS*i);
             send(clientSocket, msg, 67, 0);
         }
-
         fclose(arq);
         free(arquivo);
         free(msg);
@@ -85,8 +78,9 @@ void mudaDiretorio(char *path) {
 
 int recuperaArquivo(const char *argumento, int clientSocket) {
     if (! argumento)
-        return 1;
+        return 1;   
 
+    printf ("Argumento: %s\n", argumento);
     FILE* arq = fopen(argumento, "wb");
     if (!arq) {
         printf("Erro ao abrir o arquivo.");
@@ -96,38 +90,49 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
     int tamanho = readArchive(arq);
 
     mensagem_t *receivedMsg;
-    mensagem_t* sentMsg = calloc(1, sizeof(mensagem_t)+1);
+    mensagem_t* sentMsg = malloc(sizeof(mensagem_t));
 
     receivedMsg = CriaMensagem(2, argumento, 0, TAM_BUFFER_DADOS);
     send(clientSocket, receivedMsg, 67, 0);
+    printf ("aaaaaa\n");
 
-    unsigned char* arquivo = malloc(sizeof(unsigned char) * TAM_BUFFER_DADOS);
     ssize_t recvReturn;
-
+    int ultimaSequencia = -1;
     while(1) {
         recvReturn = recv(clientSocket, receivedMsg, 67, 0);
+        printf ("sequencia recebida: %d\n", receivedMsg->sequencia);
         if(recvReturn == -1) {
             printf("Timeout!");
             continue;
         } else {
-            if(receivedMsg->ini == (unsigned char)BIT_INICIO) {
-                if(receivedMsg->tipo == 8) {
+            if(receivedMsg->ini == (unsigned char)BIT_INICIO && receivedMsg->sequencia != ultimaSequencia) {
+                if(receivedMsg->tipo == 0  ) {
+                    printf ("sequencia recebida: %d\n", receivedMsg->sequencia);
                     printf("Dados recebidos\n");
-                    fwrite(arquivo, sizeof(char), receivedMsg->tam, arq);
+                    fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
+                    fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
+                    ultimaSequencia = receivedMsg->sequencia;
                 } 
+                
                 else if(receivedMsg->tipo == 9) {
+                {
                     printf("Final do arquivo\n");
+                    fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
+                    fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
-                    fclose(arq);
-                    free(arquivo);
-                    return;
+                    printf ("menagem enviada\n");
+                    ultimaSequencia = receivedMsg->sequencia;
+                    break;
+                }
+                ultimaSequencia = -1;
                 }
             }
         }
     }
 
-    free(arquivo);
+    fclose(arq);
     free(receivedMsg);
+    free(sentMsg);
     return 0;
 }
