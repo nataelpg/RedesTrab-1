@@ -32,6 +32,7 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
         // IMPRIME ENVIA_NOME
         printf ("tipo mensagem: %d\n", msg->tipo);
         send(clientSocket, msg, 67, 0);
+        recebeConfirmacao(clientSocket, msg);
         // unsigned char buffer[1024];
         size_t bytesRead;
         int i = 0;
@@ -60,6 +61,7 @@ int backupArquivo(unsigned char *argumento, int clientSocket) {
         fclose(arq);
         free(arquivo);
         free(msg);
+        printf ("fim de arquivo\n");
     }
     return 0;
 }
@@ -120,7 +122,7 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
                     fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
                     fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
-                    ultimaSequencia = receivedMsg->sequencia;
+                    // ultimaSequencia = receivedMsg->sequencia;
                 } 
                 
                 else if(receivedMsg->tipo == 9 && receivedMsg->sequencia != ultimaSequencia) {
@@ -131,12 +133,12 @@ int recuperaArquivo(const char *argumento, int clientSocket) {
                     fwrite(receivedMsg->dados, sizeof(unsigned char), receivedMsg->tam, arq);
                     fflush(arq);
                     mandaResposta(clientSocket, receivedMsg, sentMsg);
-                    ultimaSequencia = receivedMsg->sequencia;
+                    //ultimaSequencia = receivedMsg->sequencia;
                     fclose(arq);
                     free(receivedMsg);
-                    return;
+                    break;
                 }
-                ultimaSequencia = -1;
+                //ultimaSequencia = -1;
                 }
             }
         }

@@ -113,7 +113,9 @@ void recebeConfirmacao(int socket, mensagem_t *msg) {
         break;
       }
       else if(receivedMsg.tipo == 15) {
-        printf("Nack recebido!\n"); 
+        printf("Nack recebido!\n");
+        printf ("Dados aaaaaaaaa: %s\n", msg->dados);
+        printf ("Tipo aaaaaaaaa: %d\n", msg->tipo); 
         send(socket, msg, 67, 0);
         continue;
       }

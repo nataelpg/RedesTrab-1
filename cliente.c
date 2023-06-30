@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     char *path, comando[100], arg[100], *token = NULL;
 
     // printf("Mensagem: %s\n", mensagem);
-    clientSocket = ConexaoRawSocket("lo");
+    clientSocket = ConexaoRawSocket(ETHERNET);
     while (1) {
         fgets(comando, sizeof(comando), stdin);
         char *token = NULL;

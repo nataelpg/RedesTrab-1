@@ -9,7 +9,7 @@
 #define BIT_INICIO 01111110
 
 int main(int argc, char *argv[]) {
-    int serverSocket = ConexaoRawSocket("lo");
+    int serverSocket = ConexaoRawSocket(ETHERNET);
     char path[1024];
     getcwd(path, sizeof(path)); // stores the current directory 
     mensagem_t receivedMsg, *sentMsg;
@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
                 printf("Error opening file.\n");
                 return 1;
             }
+            mandaResposta(serverSocket, &receivedMsg, sentMsg);
             ultimaSequencia = -1;
             continue;
         }
