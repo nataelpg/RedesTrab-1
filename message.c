@@ -92,12 +92,20 @@ void recebeConfirmacao(int socket, mensagem_t *msg) {
   mensagem_t receivedMsg;
   setSocketTimeout(socket);
   
+  int countTimeOut = 0;
+  int countNack = 0;
   while(1) {
     recvReturn = recv(socket, &receivedMsg, 67, 0);
     if (recvReturn == -1) {
       printf("Retorno não recebido! Timeout!\n");
       // fazer timeout
       send(socket, msg, 67, 0);
+      countTimeOut++;
+      if (countTimeOut > MAX_TIMEOUT){
+        printf("Muitos timeouts! Abortando conexão!\n");
+        exit(1);  
+      }
+      printf("Timeout: %d\n", countTimeOut);
       continue;
     }
 
@@ -109,13 +117,19 @@ void recebeConfirmacao(int socket, mensagem_t *msg) {
       }
       else if(receivedMsg.tipo == 14) {
         printf("Ack recebido!\n");
-        printf("%d\n", receivedMsg.tipo);
         break;
       }
       else if(receivedMsg.tipo == 15) {
         printf("Nack recebido!\n");
-        printf ("Dados aaaaaaaaa: %s\n", msg->dados);
-        printf ("Tipo aaaaaaaaa: %d\n", msg->tipo); 
+        countNack++;
+        printf ("Nack numero: %d\n", countNack);
+        if (countNack > MAX_NACK){
+          printf("Muitos Nacks finalizando envio!\n");
+          printf ("Nack numero: %d\n", countNack);
+          mensagem_t *msgFim = CriaMensagem(9, NULL, 0, 0);
+          send(socket, msgFim, 67, 0);
+          exit(1);
+        }
         send(socket, msg, 67, 0);
         continue;
       }

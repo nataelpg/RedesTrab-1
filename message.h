@@ -39,7 +39,9 @@
 
 
 #define BIT_INICIO 01111110 // 01111110 sequencia para começar a ler a mensagem
-#define TAM_BUFFER_DADOS 63 //tamanho do buffer de dados 
+#define TAM_BUFFER_DADOS 63 //tamanho do buffer de dados
+#define MAX_TIMEOUT 8 
+#define MAX_NACK 100
 
 struct mensagem {
 	unsigned int ini:8;

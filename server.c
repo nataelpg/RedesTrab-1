@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
             fflush(file);
             mandaResposta(serverSocket, &receivedMsg, sentMsg);
             printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
-            ultimaSequencia = receivedMsg.sequencia;
         }
         if ((receivedMsg.sequencia != ultimaSequencia) && receivedMsg.tipo == 11  && (receivedMsg.ini == (unsigned char)BIT_INICIO)) {
             printf("Nome do arquivo: %s\n", receivedMsg.dados);
@@ -51,7 +50,6 @@ int main(int argc, char *argv[]) {
             printf ("Sequencia recebida: %d\n", receivedMsg.sequencia);
             fwrite(receivedMsg.dados, sizeof(unsigned char), receivedMsg.tam, file);
             fflush(file);
-            ultimaSequencia = receivedMsg.sequencia;
             continue;
         }      
         ultimaSequencia = -1;        
